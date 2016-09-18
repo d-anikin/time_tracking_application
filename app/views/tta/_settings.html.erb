@@ -1,0 +1,75 @@
+<p>
+  <label for="settings_assigned_to_me"><%= l(:label_tta_assigned_to_me) %></label>
+  <%= hidden_field_tag 'settings[assigned_to_me]', 0, :id => nil %>
+  <%= check_box_tag 'settings[assigned_to_me]', 1, Setting.plugin_time_tracking_application['assigned_to_me'].to_i > 0 %>
+</p>
+<p>
+  <label for="settings_unassigned"><%= l(:label_tta_unassigned) %></label>
+  <%= hidden_field_tag 'settings[unassigned]', 0, :id => nil %>
+  <%= check_box_tag 'settings[unassigned]', 1, Setting.plugin_time_tracking_application['unassigned'].to_i > 0 %>
+</p>
+<p>
+  <label for="settings_sort_by_priority"><%= l(:label_tta_sort_by_priority) %></label>
+  <%= hidden_field_tag 'settings[sort_by_priority]', 0, :id => nil %>
+  <%= check_box_tag 'settings[sort_by_priority]', 1, Setting.plugin_time_tracking_application['sort_by_priority'].to_i > 0 %>
+</p>
+
+<p>
+  <label for="settings_auto_assign_on_start"><%= l(:label_tta_auto_assign_on_start) %></label>
+  <%= hidden_field_tag 'settings[auto_assign_on_start]', 0, :id => nil %>
+  <%= check_box_tag 'settings[auto_assign_on_start]', 1, Setting.plugin_time_tracking_application['auto_assign_on_start'].to_i > 0 %>
+</p>
+
+
+<p>
+  <label for="settings_change_status_on_start"><%= l(:label_tta_change_status_on_start) %></label>
+  <%= hidden_field_tag 'settings[change_status_on_start]', 0, :id => nil %>
+  <%= check_box_tag 'settings[change_status_on_start]', 1, Setting.plugin_time_tracking_application['change_status_on_start'].to_i > 0 %>
+
+  <table>
+    <tr>
+      <td style="vertical-align: top">
+        <%= l(:label_tta_from_status) %><br>
+        <%= select_tag 'settings[start_from_statuses]',
+              options_for_select(IssueStatus.sorted.pluck(:name, :id),
+                                 Setting.plugin_time_tracking_application['start_from_statuses']),
+              :multiple => true,
+              :size => 10,
+              :style => "width:150px" %>
+      </td>
+      <td style="vertical-align: top">
+        <%= l(:label_tta_to_status) %><br>
+        <%= select_tag 'settings[started_status]',
+              options_for_select(IssueStatus.sorted.pluck(:name, :id),
+                                 Setting.plugin_time_tracking_application['started_status']),
+              :style => "width:150px" %>
+        </td>
+    </tr>
+  </table>
+</p>
+
+<p>
+  <label for="settings_change_status_on_stop"><%= l(:label_tta_change_status_on_stop) %></label>
+  <%= hidden_field_tag 'settings[change_status_on_stop]', 0, :id => nil %>
+  <%= check_box_tag 'settings[change_status_on_stop]', 1, Setting.plugin_time_tracking_application['change_status_on_stop'].to_i > 0 %>
+  <table>
+    <tr>
+      <td style="vertical-align: top">
+        <%= l(:label_tta_from_status) %><br>
+        <%= select_tag 'settings[stop_from_statuses]',
+              options_for_select(IssueStatus.sorted.pluck(:name, :id),
+                                 Setting.plugin_time_tracking_application['stop_from_statuses']),
+              :multiple => true,
+              :size => 10,
+              :style => "width:150px" %>
+      </td>
+      <td style="vertical-align: top">
+        <%= l(:label_tta_to_status) %><br>
+        <%= select_tag 'settings[stopped_status]',
+              options_for_select(IssueStatus.sorted.pluck(:name, :id),
+                                 Setting.plugin_time_tracking_application['stopped_status']),
+              :style => "width:150px" %>
+        </td>
+    </tr>
+  </table>
+</p>

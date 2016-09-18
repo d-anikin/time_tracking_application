@@ -1,0 +1,11 @@
+api.array :issues do
+  @issues.each do |issue|
+    api.issue do
+      api.id issue.id
+      api.status(:id => issue.status_id, :name => issue.status.name) unless issue.status.nil?
+      api.author(:id => issue.author_id, :name => issue.author.name) unless issue.author.nil?
+      api.assigned_to(:id => issue.assigned_to_id, :name => issue.assigned_to.name) unless issue.assigned_to.nil?
+      api.subject     issue.subject
+    end
+  end
+end

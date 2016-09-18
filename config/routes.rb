@@ -1,4 +1,11 @@
-get '/time_tracking_application/details', :to => 'main#details'
-get '/time_tracking_application/timelog/start', :to => 'timelog#start'
-get '/time_tracking_application/timelog/update', :to => 'timelog#update'
-get '/time_tracking_application/timelog/stop', :to => 'timelog#stop'
+namespace :tta do
+  post :session, :to => 'session#create'
+  delete :session, :to => 'session#destroy'
+  get :idle, :to => 'session#idle'
+  get :issues, :to => 'issues#index'
+  resources :time_entry, only: [:update] do
+    get :idle, on: :collection
+    post :start, on: :collection
+    put :stop
+  end
+end
