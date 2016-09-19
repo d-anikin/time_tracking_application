@@ -5,25 +5,24 @@ class Tta::IssuesController < ApplicationController
   accept_api_auth :index
 
   def index
-    @issues = Issue.visible.open
-    @issues = apply_settings(@issues)
-    call_hook(:controller_tta_issues_index, {:issues => @issues })
-    @issues = @issues.includes(:assigned_to, :author, :status)
-    @issues = @issues.limit(100)
+    assigned_ids = []
+    assigned_ids << nil if Setting.plugin_time_tracking_application['unassigned'].to_i > 0
+    assigned_ids << User.current.id if Setting.plugin_time_tracking_application['assigned_to_me'].to_i > 0
+    if Redmine::Plugin.registered_plugins[:redmine_backlog]
+      backlog = Backlog.query_backlog
+      backlog = backlog.where('issues.assigned_to_id' => assigned_ids) if assigned_ids.any?
+      backlog = backlog.includes(issue: [:assigned_to, :author, :status])
+      @issues = backlog.map(&:issue).select(&:visible?)
+    else
+      @issues = Issue.visible.open
+      @issues = @issues.joins(:priority).order("#{IssuePriority.table_name}.position DESC") if Setting.plugin_time_tracking_application['sort_by_priority'].to_i > 0
+      @issues = @issues.where(assigned_to_id: assigned_ids) if assigned_ids.any?
+      @issues = @issues.includes(:assigned_to, :author, :status)
+      @issues = @issues.limit(100)
+    end
 
     respond_to do |format|
       format.api {}
     end
-  end
-
-  private
-
-  def apply_settings(issues)
-    values = []
-    values << nil if Setting.plugin_time_tracking_application['unassigned'].to_i > 0
-    values << User.current.id if Setting.plugin_time_tracking_application['assigned_to_me'].to_i > 0
-    issues = issues.where(assigned_to_id: values) if values.any?
-    issues = issues.joins(:priority).order("#{IssuePriority.table_name}.position DESC") if Setting.plugin_time_tracking_application['sort_by_priority'].to_i > 0
-    issues
   end
 end
