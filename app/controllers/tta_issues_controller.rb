@@ -1,4 +1,4 @@
-class Tta::IssuesController < ApplicationController
+class TtaIssuesController < ApplicationController
   unloadable
 
   before_action :require_login

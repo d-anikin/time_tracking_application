@@ -1,6 +1,7 @@
 ru:
   change_status_on_start: 'Изменить статус при старте таймера'
   change_status_on_stop: 'Изменить статус при остановке таймера'
+  label_tta_activities: "Активность"
   label_tta_assigned_to_me: 'Показать задачи назначеные на меня'
   label_tta_auto_assign_on_start: 'Автоматически назначать при старте'
   label_tta_change_status_on_start: 'Изменить статус при старте'

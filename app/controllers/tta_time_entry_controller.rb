@@ -1,4 +1,4 @@
-class Tta::TimeEntryController < ApplicationController
+class TtaTimeEntryController < ApplicationController
   unloadable
   before_action :find_issue, only: [:start]
   before_action :find_time_entry, only: [:update, :stop]
@@ -17,7 +17,7 @@ class Tta::TimeEntryController < ApplicationController
       @issue.assigned_to = User.current if auto_assign_on_start?
       @issue.status_id = started_status if change_status_on_start?
       raise "Can`t update issue\n #{@issue.errors.full_messages}" if @issue.changed? and !@issue.save
-      set_user_status(:busy)
+      set_user_status(:busy, @issue.id)
       respond_to do |format|
         format.api  { render 'timelog/show'}
       end
@@ -30,9 +30,9 @@ class Tta::TimeEntryController < ApplicationController
 
   def update
     @time_entry.assign_attributes(time_entry_params)
-    @time_entry.hours = ((DateTime.current.to_time - @time_entry.created_on.to_time) / 1.hours).round(2)
+    @time_entry.hours = ((Time.now.to_time - @time_entry.created_on.to_time) / 1.hours).round(2)
     if @time_entry.save
-      set_user_status(:busy)
+      set_user_status(:busy,  @time_entry.issue_id)
       respond_to do |format|
         format.api  { render 'timelog/show'}
       end
@@ -45,11 +45,11 @@ class Tta::TimeEntryController < ApplicationController
 
   def stop
     @time_entry.assign_attributes(time_entry_params)
-    @time_entry.hours = ((DateTime.current.to_time - @time_entry.created_on.to_time) / 1.hours).round(2)
+    @time_entry.hours = ((Time.now.to_time - @time_entry.created_on.to_time) / 1.hours).round(2)
     if @time_entry.save
       @issue.status_id = stopped_status if change_status_on_stop? && in_process?(@issue)
       raise "Can`t update issue:\n #{@issue.errors.full_messages}" if @issue.changed? and !@issue.save
-      set_user_status(:idle)
+      set_user_status(:online, nil)
       respond_to do |format|
         format.api  { render 'timelog/show'}
       end
@@ -123,17 +123,32 @@ private
   end
 
   def verify_tta_session
-    if params[:tta_session].blank? || !User.current.tta_session.eql?(params[:tta_session])
-      puts User.current.tta_session, params[:tta_session]
+    @tta_data = TtaData.find_by_user_id(User.current.id)
+    if params[:tta_session].blank? || @tta_data.nil? || !@tta_data.session.eql?(params[:tta_session])
       render_403
       return false
     end
   end
 
-  def set_user_status(status)
-    User.current.update_attributes({
-      tta_status: status,
-      tta_status_updated_at: DateTime.current
+  def set_user_status(status, issue_id)
+    if @tta_data.active_issue_id != issue_id
+      @tta_data.assign_attributes({
+        active_issue_id: issue_id,
+        active_issue_started_at: Time.now
+      })
+
+      if !issue_id.nil? && !isSameDay?(@tta_data.first_issue_started_at, Time.now)
+        @tta_data.first_issue_started_at = Time.now
+      end
+    end
+    @tta_data.assign_attributes({
+      status: status,
+      status_updated_at: Time.now
     })
+    @tta_data.save
+  end
+
+  def isSameDay?(dt1, dt2)
+    return dt1 && dt2 && dt1.to_date != dt2
   end
 end

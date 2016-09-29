@@ -1,6 +1,7 @@
 en:
   change_status_on_start: 'Change status on start'
   change_status_on_stop: 'Change status on stop'
+  label_tta_activities: Activies
   label_tta_assigned_to_me: 'Show issues assigned to current user'
   label_tta_auto_assign_on_start: 'Auto assign on start'
   label_tta_change_status_on_start: 'Change status on start'

@@ -1,0 +1,28 @@
+<table class="list">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Status</th>
+      <th>Issue</th>
+      <th>Today Start At</th>
+      <th>Today Spent</th>
+    </tr>
+  </thead>
+  <% @data.each do |item| %>
+    <tr>
+      <td><%= item.user.name %></td>
+      <td><%= tta_status(item) %></td>
+      <td>
+        <% if item.active_issue %>
+          <%= link_to_issue(item.active_issue) %>
+          (<%= format_time(item.active_issue_started_at) %>)
+        <% else %>
+          Нет задачи с
+          <%= format_time(item.active_issue_started_at) %>
+        <% end %>
+      </td>
+      <td><%= format_time(item.first_issue_started_at) if item.first_issue_started_at %></td>
+      <td><%= @summary_time[item.user.id].to_f %></td>
+    </tr>
+  <% end%>
+</table>
