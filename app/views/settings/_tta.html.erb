@@ -20,6 +20,13 @@
   <%= check_box_tag 'settings[auto_assign_on_start]', 1, Setting.plugin_time_tracking_application['auto_assign_on_start'].to_i > 0 %>
 </p>
 
+<p>
+  <%= l(:label_tta_to_status) %><br>
+  <%= select_tag 'settings[test_status]',
+        options_for_select(IssueStatus.sorted.pluck(:name, :id),
+                           Setting.plugin_time_tracking_application['test_status']),
+        :style => "width:150px" %>
+</p>
 
 <p>
   <label for="settings_change_status_on_start"><%= l(:label_tta_change_status_on_start) %></label>

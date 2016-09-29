@@ -10,7 +10,9 @@ class TtaIssuesController < ApplicationController
     assigned_ids << User.current.id if Setting.plugin_time_tracking_application['assigned_to_me'].to_i > 0
     if Redmine::Plugin.registered_plugins[:redmine_backlog]
       backlog = Backlog.query_backlog
-      backlog = backlog.where('issues.assigned_to_id' => assigned_ids) if assigned_ids.any?
+      backlog = backlog.where("(issues.assigned_to_id IN (?) OR issues.status_id = ?)" ,
+                              assigned_ids,
+                              Setting.plugin_time_tracking_application['test_status'].to_i)
       backlog = backlog.includes(issue: [:assigned_to, :author, :status])
       @issues = backlog.map(&:issue).select(&:visible?)
     else
