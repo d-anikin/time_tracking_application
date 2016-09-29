@@ -14,5 +14,5 @@ Redmine::Plugin.register :time_tracking_application do
   menu :top_menu, :tta_users, { :controller => 'tta_activities', :action => 'index' }, :caption => :label_tta_activities
 
   settings  :default => {'empty' => true},
-            :partial => 'tta_settings'
+            :partial => 'settings/tta'
 end
