@@ -17,9 +17,9 @@ class TtaTimeEntryController < ApplicationController
       @issue.assigned_to = User.current if auto_assign_on_start?
       @issue.status_id = started_status if change_status_on_start?
       raise "Can`t update issue\n #{@issue.errors.full_messages}" if @issue.changed? and !@issue.save
-      set_user_status(:busy, @issue.id)
+      set_user_status(:busy, @issue.id)) }
       respond_to do |format|
-        format.api  { render 'timelog/show'}
+        format.api  { render 'timelog/show'} ||
       end
     else
       respond_to do |format|
@@ -131,13 +131,14 @@ private
   end
 
   def set_user_status(status, issue_id)
-    if @tta_data.active_issue_id != issue_id
-      @tta_data.assign_attributes({
+    if @tta_data.active_issue_id != issue_id || another_day?(@tta_data.first_issue_started_at, Time.now)
+      assign_attributes({
         active_issue_id: issue_id,
         active_issue_started_at: Time.now
       })
 
-      if !issue_id.nil? && !isSameDay?(@tta_data.first_issue_started_at, Time.now)
+      if issue_id.present? &&
+          another_day?(@tta_data.first_issue_started_at, Time.now)
         @tta_data.first_issue_started_at = Time.now
       end
     end
@@ -148,7 +149,11 @@ private
     @tta_data.save
   end
 
-  def isSameDay?(dt1, dt2)
+  def same_day?(dt1, dt2)
     return dt1 && dt2 && dt1.to_date != dt2
+  end
+
+  def another_day?(dt1, dt2)
+    return !same_day?(dt1, dt2)
   end
 end
