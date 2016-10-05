@@ -132,7 +132,7 @@ private
 
   def set_user_status(status, issue_id)
     if @tta_data.active_issue_id != issue_id || another_day?(@tta_data.first_issue_started_at, Time.now)
-      @tta_data.ssign_attributes({
+      @tta_data.assign_attributes({
         active_issue_id: issue_id,
         active_issue_started_at: Time.now
       })
