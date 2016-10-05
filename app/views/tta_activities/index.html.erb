@@ -11,7 +11,9 @@
   <% @data.each do |item| %>
     <tr>
       <td><%= item.user.name %></td>
-      <td><%= tta_status(item) %></td>
+      <td>
+        <%= tta_status(item) %> (<%= format_time(item.status_updated_at) %>)
+      </td>
       <td>
         <% if item.active_issue %>
           <%= link_to_issue(item.active_issue) %>
