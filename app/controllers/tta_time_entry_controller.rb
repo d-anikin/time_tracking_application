@@ -31,8 +31,8 @@ class TtaTimeEntryController < ApplicationController
   def update
     @time_entry.assign_attributes(time_entry_params)
     @time_entry.hours = ((Time.now.to_time - @time_entry.created_on.to_time) / 1.hours).round(2)
+    set_user_status(:busy,  @time_entry.issue_id)
     if @time_entry.save
-      set_user_status(:busy,  @time_entry.issue_id)
       respond_to do |format|
         format.api  { render 'timelog/show' }
       end
@@ -132,20 +132,16 @@ private
 
   def set_user_status(status, issue_id)
     if @tta_data.active_issue_id != issue_id
-      @tta_data.assign_attributes({
-        active_issue_id: issue_id,
-        active_issue_started_at: Time.now
-      })
+      @tta_data.active_issue_id = issue_id
+      @tta_data.active_issue_started_at = Time.now
 
       if issue_id.present? &&
           another_day?(@tta_data.first_issue_started_at, Time.now)
         @tta_data.first_issue_started_at = Time.now
       end
     end
-    @tta_data.assign_attributes({
-      status: status,
-      status_updated_at: Time.now
-    })
+    @tta_data.status = status
+    @tta_data.status_updated_at = Time.now
     @tta_data.save
   end
 

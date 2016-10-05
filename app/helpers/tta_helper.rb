@@ -1,9 +1,9 @@
 module TtaHelper
   def tta_status_raw(data)
     if data.status.nil?
-      return "Offline"
-    elsif data.status and
-          data.status_updated_at and
+      return "none"
+    elsif data.status &&
+          data.status_updated_at &&
           5.minutes.ago < data.status_updated_at
       return data.status.capitalize
     else
