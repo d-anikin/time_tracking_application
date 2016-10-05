@@ -19,7 +19,7 @@ class TtaTimeEntryController < ApplicationController
       raise "Can`t update issue\n #{@issue.errors.full_messages}" if @issue.changed? and !@issue.save
       set_user_status(:busy, @issue.id)
       respond_to do |format|
-        format.api  { render 'timelog/show'} ||
+        format.api  { render 'timelog/show' }
       end
     else
       respond_to do |format|
@@ -34,7 +34,7 @@ class TtaTimeEntryController < ApplicationController
     if @time_entry.save
       set_user_status(:busy,  @time_entry.issue_id)
       respond_to do |format|
-        format.api  { render 'timelog/show'}
+        format.api  { render 'timelog/show' }
       end
     else
       respond_to do |format|
