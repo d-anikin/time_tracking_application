@@ -17,7 +17,7 @@ class TtaTimeEntryController < ApplicationController
       @issue.assigned_to = User.current if auto_assign_on_start?
       @issue.status_id = started_status if change_status_on_start?
       raise "Can`t update issue\n #{@issue.errors.full_messages}" if @issue.changed? and !@issue.save
-      set_user_status(:busy, @issue.id)) }
+      set_user_status(:busy, @issue.id)
       respond_to do |format|
         format.api  { render 'timelog/show'} ||
       end
